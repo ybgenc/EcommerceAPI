@@ -19,7 +19,7 @@ namespace EcommerceAPI.Persistence.Repositories
         {
             _context = context;
         }
-        public DbSet<T> Table => throw new NotImplementedException();
+        public DbSet<T> Table => _context.Set<T>(); 
 
         public async Task<bool> AddAsync(T model)
         {
@@ -56,7 +56,7 @@ namespace EcommerceAPI.Persistence.Repositories
             return entityEntry.State == EntityState.Modified;
         }
 
-        public  Task<int> SaveAsync(T model)
+        public  Task<int> SaveAsync()
             => _context.SaveChangesAsync();
 
 
