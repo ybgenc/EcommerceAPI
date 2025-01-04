@@ -1,4 +1,5 @@
 ﻿using EcommerceAPI.Domain.Entities;
+using EcommerceAPI.Domain.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,26 @@ namespace EcommerceAPI.Persistence.Contexts
     public class EcommerceAPIDbContext : DbContext
     {
         public EcommerceAPIDbContext(DbContextOptions options) : base(options)
-        {
-            
-        }
+        { }
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var datas = ChangeTracker.Entries<BaseEntitiy>();
+
+            foreach (var entry in datas)
+            {
+                _ = entry.State switch
+                {
+                    EntityState.Added => entry.Entity.CreatedDate = DateTime.UtcNow,
+                    EntityState.Modified => entry.Entity.UpdatedDate = DateTime.UtcNow,
+                };
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
 }
