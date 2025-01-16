@@ -67,10 +67,10 @@ namespace EcommerceAPI.Infrastructure.Services.Storage.Local
             List<(string fileName, string path)> datas = new();
             foreach (IFormFile file in files)
             {
-                bool result = await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
+                await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
                 datas.Add((file.Name,  $"{path}\\{file.Name}"));
             }
-            return null;
+            return datas;
         }
     }
 }
