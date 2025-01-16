@@ -12,6 +12,12 @@ using EcommerceAPI.Application.Repositories.ProductRepository;
 using EcommerceAPI.Persistence.Repositories.CustomerRepository;
 using EcommerceAPI.Persistence.Repositories.ProductRepository;
 using EcommerceAPI.Persistence.Repositories.OrderRepository;
+using EcommerceAPI.Application.Repositories.ProductImageFileRepository;
+using EcommerceAPI.Persistence.Repositories.ProductImageRepository;
+using EcommerceAPI.Application.Repositories.InvoiceRepository;
+using EcommerceAPI.Persistence.Repositories.InvoiceRepository;
+using EcommerceAPI.Application.Repositories.FileRepository;
+using EcommerceAPI.Persistence.Repositories.FileRepository;
 
 namespace EcommerceAPI.Persistence
 {
@@ -27,6 +33,12 @@ namespace EcommerceAPI.Persistence
             services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
             services.AddScoped<IOrderReadRepository, OrderReadRepository>();
             services.AddScoped<IOrderWriteRepository, OrderWriteRepository>();
+            services.AddScoped<IFileWriteRepository,FileWriteRepository>();
+            services.AddScoped<IFileReadRepository, FileReadRepository>();
+            services.AddScoped<IProductImageWriteRepository, ProductImageWriteRepository>();
+            services.AddScoped<IProductImageReadRepository,ProductImageReadRepository>();
+            services.AddScoped<IInvoiceReadRepository,InvoceReadRepository>();
+            services.AddScoped<IInvoiceWriteRepository, InvoiceWriteRepository>();
         }
     }
 }

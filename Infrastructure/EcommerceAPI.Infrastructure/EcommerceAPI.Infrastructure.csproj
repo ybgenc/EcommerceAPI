@@ -10,4 +10,8 @@
     <ProjectReference Include="..\..\Core\EcommerceAPI.Application\EcommerceAPI.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>

@@ -21,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\resources\product-images\" />
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\resources\file\" />
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
+//builder.Services.AddStorage(StorageType, Azure); <--//TODO-->
 
 
 builder.Services.AddCors(options => options.AddDefaultPolicy( policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
