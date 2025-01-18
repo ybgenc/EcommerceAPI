@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EcommerceAPI.Infrastructure.Services
+namespace EcommerceAPI.Infrastructure.Services.Storage
 {
-    public class FileService 
+    public class Storage
     {
-        public async Task<string> FileRenameAsync(string path, string fileName)
+        protected delegate bool HasFile(string pathOrContainerName, string fileName);
+        protected  async Task<string> FileRenameAsync(string pathOrContainerName, string fileName, HasFile hasFileFunc)
         {
             string extension = Path.GetExtension(fileName);
             string oldName = Path.GetFileNameWithoutExtension(fileName);
@@ -18,18 +17,15 @@ namespace EcommerceAPI.Infrastructure.Services
             string regulatedName = $"{NameOperation.NameRegulation(oldName)}{extension}";
             int i = 2;
 
-            while (File.Exists(Path.Combine(path, regulatedName)))
+            while (hasFileFunc(pathOrContainerName,regulatedName))
             {
                 regulatedName = $"{NameOperation.NameRegulation(oldName)}-{i}{extension}";
                 i++;
             }
 
             return await Task.FromResult(regulatedName);
+
+
         }
-
-
-
-
-
     }
 }
