@@ -6,6 +6,9 @@ using EcommerceAPI.Infrastructure.Services.Storage.Azure;
 using EcommerceAPI.Infrastructure.Services.Storage.Local;
 using EcommerceAPI.Persistence;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +20,21 @@ builder.Services.AddApplicationServices();
 
 builder.Services.AddStorage<AzureStorage>();
 //builder.Services.AddStorage<LocalStorage>();
+
+builder.Services.AddAuthentication("Admin").AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new()
+    {
+        ValidateAudience = true,
+        ValidateIssuer = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidAudience = builder.Configuration["Token:Audience"],
+        ValidIssuer = builder.Configuration["Token:Isssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SignInKey"]))
+    };
+});
 
 
 
