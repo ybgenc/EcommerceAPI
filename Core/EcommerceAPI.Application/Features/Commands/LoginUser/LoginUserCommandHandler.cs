@@ -32,22 +32,19 @@ namespace EcommerceAPI.Application.Features.Commands.LoginUser
             appUser.AppUser user = await _userManager.FindByNameAsync(request.UsernameOrEmail);
             if (user == null)
                 user = await _userManager.FindByEmailAsync(request.UsernameOrEmail);
-            else
-                throw new  UserNotFoundException();
+
 
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (result.Succeeded)
             {
                 Tokens.Token token = _tokenHandler.CreateAccesstoken(5);
-                return new LoginUserCommandSuccessResponse()
+                return new LoginUserCommandResponse()
                 {
-                     Token = token
+                    Token = token
                 };
             }
             throw new AuthenticationErrorException();
-
-            
-            
         }
+
     }
 }

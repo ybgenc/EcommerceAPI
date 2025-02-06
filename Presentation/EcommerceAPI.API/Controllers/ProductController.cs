@@ -8,6 +8,7 @@ using EcommerceAPI.Application.Features.Queries.Product.GetByIdProduct;
 using EcommerceAPI.Application.Features.Queries.Product.GetProductImage;
 
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

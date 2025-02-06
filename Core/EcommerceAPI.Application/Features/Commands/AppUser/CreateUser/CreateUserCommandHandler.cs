@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using appUser = EcommerceAPI.Domain.Entities.Identity;
 
-namespace EcommerceAPI.Application.Features.Commands.AppUser
+namespace EcommerceAPI.Application.Features.Commands.AppUser.CreateUser
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
     {
@@ -22,7 +22,7 @@ namespace EcommerceAPI.Application.Features.Commands.AppUser
 
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
         {
-            IdentityResult result =  await _userManager.CreateAsync(new()
+            IdentityResult result = await _userManager.CreateAsync(new()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = request.UserName,
@@ -34,7 +34,7 @@ namespace EcommerceAPI.Application.Features.Commands.AppUser
             if (result.Succeeded)
                 response.Message = "User created successfully.";
             else
-                foreach(var error in result.Errors)
+                foreach (var error in result.Errors)
                 {
                     response.Message += $"{error.Code} - {error.Description}";
                 }

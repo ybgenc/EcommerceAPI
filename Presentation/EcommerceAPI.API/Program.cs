@@ -21,7 +21,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddStorage<AzureStorage>();
 //builder.Services.AddStorage<LocalStorage>();
 
-builder.Services.AddAuthentication("Admin").AddJwtBearer(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("Admin", options =>
 {
     options.TokenValidationParameters = new()
     {
@@ -30,7 +30,7 @@ builder.Services.AddAuthentication("Admin").AddJwtBearer(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidAudience = builder.Configuration["Token:Audience"],
+        ValidAudience = builder.Configuration["Token:Audience"], 
         ValidIssuer = builder.Configuration["Token:Isssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SignInKey"]))
     };
@@ -62,6 +62,7 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
