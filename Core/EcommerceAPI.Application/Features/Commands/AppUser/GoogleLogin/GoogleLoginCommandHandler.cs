@@ -4,6 +4,7 @@ using EcommerceAPI.Application.Exceptions;
 using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,18 +17,21 @@ namespace EcommerceAPI.Application.Features.Commands.AppUser.GoogleLogin
     {
         readonly UserManager<appUser.AppUser> _userManager;
         readonly ITokenHandler _tokenHandler;
+        readonly IConfiguration _configuration;
 
-        public GoogleLoginCommandHandler(UserManager<appUser.AppUser> userManager, ITokenHandler tokenHandler)
+        public GoogleLoginCommandHandler(UserManager<appUser.AppUser> userManager, ITokenHandler tokenHandler, IConfiguration configuration)
         {
             _userManager = userManager;
             _tokenHandler = tokenHandler;
+            _configuration = configuration;
         }
 
         public async Task<GoogleLoginCommandResponse> Handle(GoogleLoginCommandRequest request, CancellationToken cancellationToken)
         {
+
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-                Audience = new List<string> { "961329149205-on48ppdfo85dtktm6fnnsfl0sesdvj6h.apps.googleusercontent.com" }
+                Audience = new List<string> { _configuration["GoogleLogin:Audience"], }
             };
             var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken,settings);
 
