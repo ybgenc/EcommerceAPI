@@ -3,7 +3,6 @@ using EcommerceAPI.Application.Features.Commands.AppUser.FacebookLogin;
 using EcommerceAPI.Application.Features.Commands.AppUser.GoogleLogin;
 using EcommerceAPI.Application.Features.Commands.LoginUser;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPI.API.Controllers

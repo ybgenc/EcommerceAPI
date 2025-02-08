@@ -1,15 +1,9 @@
 ﻿using EcommerceAPI.Application.Repositories.ProductImageFileRepository;
 using EcommerceAPI.Application.Repositories.ProductRepository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
-using Products = EcommerceAPI.Domain.Entities;
-using ProductImage = EcommerceAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using ProductImage = EcommerceAPI.Domain.Entities;
+using Products = EcommerceAPI.Domain.Entities;
 
 namespace EcommerceAPI.Application.Features.Commands.ProductImageFile.DeleteProductImage
 {

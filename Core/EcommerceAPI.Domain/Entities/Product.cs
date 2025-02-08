@@ -1,7 +1,4 @@
 ﻿using EcommerceAPI.Domain.Entities.Common;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcommerceAPI.Domain.Entities
 {

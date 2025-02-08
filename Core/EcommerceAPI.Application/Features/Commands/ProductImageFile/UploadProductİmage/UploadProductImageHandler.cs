@@ -2,13 +2,8 @@
 using EcommerceAPI.Application.Repositories.ProductImageFileRepository;
 using EcommerceAPI.Application.Repositories.ProductRepository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Products = EcommerceAPI.Domain.Entities;
 using ProdcutImage = EcommerceAPI.Domain.Entities;
+using Products = EcommerceAPI.Domain.Entities;
 
 namespace EcommerceAPI.Application.Features.Commands.ProductImageFile.UploadProductİmage
 {

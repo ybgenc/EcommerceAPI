@@ -1,14 +1,7 @@
 ﻿using EcommerceAPI.Application.Abstraction.Token;
-using EcommerceAPI.Application.DTOs;
 using EcommerceAPI.Application.Exceptions;
-using EcommerceAPI.Application.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using appUser = EcommerceAPI.Domain.Entities.Identity;
 using Tokens = EcommerceAPI.Application.DTOs;
 

@@ -1,11 +1,5 @@
 ﻿using EcommerceAPI.Application.Repositories.ProductRepository;
-using EcommerceAPI.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Products = EcommerceAPI.Domain.Entities;
 
 namespace EcommerceAPI.Application.Features.Queries.Product.GetByIdProduct

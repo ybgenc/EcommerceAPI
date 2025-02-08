@@ -1,24 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using EcommerceAPI.Persistence.Contexts;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EcommerceAPI.Application.Abstraction.Services;
+using EcommerceAPI.Application.Abstraction.Services.Authentication;
 using EcommerceAPI.Application.Repositories.CustomerRepository;
-using EcommerceAPI.Application.Repositories.OrderRepository;
-using EcommerceAPI.Application.Repositories.ProductRepository;
-using EcommerceAPI.Persistence.Repositories.CustomerRepository;
-using EcommerceAPI.Persistence.Repositories.ProductRepository;
-using EcommerceAPI.Persistence.Repositories.OrderRepository;
-using EcommerceAPI.Application.Repositories.ProductImageFileRepository;
-using EcommerceAPI.Persistence.Repositories.ProductImageRepository;
-using EcommerceAPI.Application.Repositories.InvoiceRepository;
-using EcommerceAPI.Persistence.Repositories.InvoiceRepository;
 using EcommerceAPI.Application.Repositories.FileRepository;
-using EcommerceAPI.Persistence.Repositories.FileRepository;
+using EcommerceAPI.Application.Repositories.InvoiceRepository;
+using EcommerceAPI.Application.Repositories.OrderRepository;
+using EcommerceAPI.Application.Repositories.ProductImageFileRepository;
+using EcommerceAPI.Application.Repositories.ProductRepository;
 using EcommerceAPI.Domain.Entities.Identity;
+using EcommerceAPI.Persistence.Contexts;
+using EcommerceAPI.Persistence.Repositories.CustomerRepository;
+using EcommerceAPI.Persistence.Repositories.FileRepository;
+using EcommerceAPI.Persistence.Repositories.InvoiceRepository;
+using EcommerceAPI.Persistence.Repositories.OrderRepository;
+using EcommerceAPI.Persistence.Repositories.ProductImageRepository;
+using EcommerceAPI.Persistence.Repositories.ProductRepository;
+using EcommerceAPI.Persistence.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EcommerceAPI.Persistence
 {
@@ -42,6 +40,13 @@ namespace EcommerceAPI.Persistence
             services.AddScoped<IProductImageReadRepository,ProductImageReadRepository>();
             services.AddScoped<IInvoiceReadRepository,InvoceReadRepository>();
             services.AddScoped<IInvoiceWriteRepository, InvoiceWriteRepository>();
+
+
+            services.AddScoped<IUserService, UserService >();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IExternalAuth, AuthService>();
+            services.AddScoped<IInternalAuth, AuthService>();
+
         }
     }
 }

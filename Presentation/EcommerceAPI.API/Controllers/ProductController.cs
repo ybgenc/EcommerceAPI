@@ -1,5 +1,4 @@
-﻿using EcommerceAPI.Application.Abstraction.Storage;
-using EcommerceAPI.Application.Features.Commands.Product.CreateProduct;
+﻿using EcommerceAPI.Application.Features.Commands.Product.CreateProduct;
 using EcommerceAPI.Application.Features.Commands.Product.DeleteProduct;
 using EcommerceAPI.Application.Features.Commands.Product.UpdateProduct;
 using EcommerceAPI.Application.Features.Commands.ProductImageFile.UploadProductİmage;
@@ -8,10 +7,7 @@ using EcommerceAPI.Application.Features.Queries.Product.GetByIdProduct;
 using EcommerceAPI.Application.Features.Queries.Product.GetProductImage;
 
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceAPI.API.Controllers
 {
