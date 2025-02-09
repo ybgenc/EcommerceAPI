@@ -9,12 +9,4 @@ namespace EcommerceAPI.Application.Features.Commands.LoginUser
 
 
     }
-    public class LoginUserCommandSuccessResponse : LoginUserCommandResponse
-    {
-
-    }
-    public class LoginUserCommandErrorResponse : LoginUserCommandResponse
-    {
-
-    }
 }

@@ -1,7 +1,8 @@
-﻿namespace EcommerceAPI.Application.Abstraction.Services.Authentication
+﻿using token = EcommerceAPI.Application.DTOs;
+namespace EcommerceAPI.Application.Abstraction.Services.Authentication
 {
     public interface IInternalAuth
     {
-        Task Login();
+        Task<token.Token> LoginAsync(string UsernameOrEmail, string Password);
     }
 }

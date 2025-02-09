@@ -4,25 +4,59 @@ using EcommerceAPI.Application.DTOs;
 using EcommerceAPI.Application.DTOs.FacebookToken;
 using EcommerceAPI.Application.Exceptions;
 using EcommerceAPI.Domain.Entities.Identity;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace EcommerceAPI.Persistence.Services
 {
     public class AuthService : IAuthService
     {
         readonly UserManager<AppUser> _userManager;
-        readonly ITokenHandler _tokenHandler;
+        readonly SignInManager<AppUser> _signInManager;
         readonly HttpClient _httpClient;
         readonly IConfiguration _configuration;
+        readonly ITokenHandler _tokenHandler;
 
-        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, System.Net.Http.IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, System.Net.Http.IHttpClientFactory httpClientFactory, IConfiguration configuration, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _tokenHandler = tokenHandler;
             _httpClient = httpClientFactory.CreateClient();
             _configuration = configuration;
+            _signInManager = signInManager;
+        }
+
+        async Task<Token> ExternalLogin(AppUser user, string Email, string Name, UserLoginInfo info)
+        {
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(Email);
+                if (user == null)
+                {
+                    user = new()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Email = Email,
+                        UserName = Email,
+                        NameSurname = Name,
+                    };
+                    await _userManager.CreateAsync(user);
+                }
+
+            }
+            if (user != null)
+            {
+                await _userManager.AddLoginAsync(user, info);
+                Token token = _tokenHandler.CreateAccesstoken(5);
+                return token;
+            }
+            else
+                throw new ExternalLoginErrorException();
+
+           
         }
 
         public async Task<Token> FacebookLoginAsync(string authToken)
@@ -48,46 +82,48 @@ namespace EcommerceAPI.Persistence.Services
 
                 AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
-
-
-                if (user == null)
-                {
-                    user = await _userManager.FindByEmailAsync(userInfoRes?.Email);
-                    if (user == null)
-                    {
-                        user = new()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Email = userInfoRes?.Email,
-                            UserName = userInfoRes?.Email,
-                            NameSurname = userInfoRes?.Name
-                        };
-                        await _userManager.CreateAsync(user);
-                    }
-
-                }
-                if (user != null)
-                    await _userManager.AddLoginAsync(user, info);
-                else
-                    throw new ExternalLoginErrorException();
-
-                Token token = _tokenHandler.CreateAccesstoken(5);
-
-                return token;
+                return await ExternalLogin(user, userInfoRes.Email, userInfoRes.Name, info);
             }
             else
                 throw new Exception("Facebook authentication failed");
         }
 
 
-        public Task<Token> GoogleLoginAsync(string IdToken)
+        public async Task<Token> GoogleLoginAsync(string IdToken)
         {
-            throw new NotImplementedException();
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new List<string> { _configuration["GoogleLogin:Audience"], }
+            };
+            var payload = await GoogleJsonWebSignature.ValidateAsync(IdToken, settings);
+            var info = new UserLoginInfo(payload.Issuer, payload.Subject, payload.Issuer);
+
+            AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+            return await ExternalLogin(user, payload.Email, payload.Name, info);
+         
         }
 
-        public Task Login()
+        public async Task<Token> LoginAsync(string UsernameOrEmail, string Password)
         {
-            throw new NotImplementedException();
+
+            AppUser user = await _userManager.FindByNameAsync(UsernameOrEmail);
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(UsernameOrEmail);
+                if (user == null)
+                    throw new UserNotFoundException();
+            }
+            SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, Password, false);
+            if (result.Succeeded)
+            {
+                Token token = _tokenHandler.CreateAccesstoken(5);
+                return token;
+
+            }
+            else
+                throw new AuthenticationErrorException();
+
         }
     }
 }
