@@ -2,6 +2,8 @@
 {
     public interface ITokenHandler
     {
-        DTOs.Token CreateAccesstoken(int minute);
+        DTOs.Token CreateAccesstoken(int accessTokenExpireDate);
+        string RefreshToken();
+
     }
 }

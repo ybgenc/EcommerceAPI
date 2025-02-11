@@ -7,6 +7,7 @@ using EcommerceAPI.Application.Features.Queries.Product.GetByIdProduct;
 using EcommerceAPI.Application.Features.Queries.Product.GetProductImage;
 
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPI.API.Controllers
@@ -18,21 +19,17 @@ namespace EcommerceAPI.API.Controllers
 
         readonly IMediator _mediator;
 
-
-
         public ProductController(IMediator mediator)
         {
 
             _mediator = mediator;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
         {
             GetAllProductQueryResponse response = await _mediator.Send(getAllProductQueryRequest);
             return Ok(response);
-
 
         }
 
@@ -74,7 +71,7 @@ namespace EcommerceAPI.API.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> GetProductImage([FromRoute]GetProductImageQueryRequest getProductImageQueryRequest)
+        public async Task<IActionResult> GetProductImage([FromRoute] GetProductImageQueryRequest getProductImageQueryRequest)
         {
             List<GetProductImageQueryResponse> response = await _mediator.Send(getProductImageQueryRequest);
             return Ok(response);
@@ -87,12 +84,5 @@ namespace EcommerceAPI.API.Controllers
             return Ok();
 
         }
-        
-        
-
-
-
-
-
     }
 }
