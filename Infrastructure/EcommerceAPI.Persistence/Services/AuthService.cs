@@ -53,7 +53,7 @@ namespace EcommerceAPI.Persistence.Services
             if (user != null)
             {
                 await _userManager.AddLoginAsync(user, info);
-                Token token = _tokenHandler.CreateAccesstoken(5);
+                Token token = _tokenHandler.CreateAccesstoken(15, user);
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
                 return token;
             }
@@ -121,7 +121,7 @@ namespace EcommerceAPI.Persistence.Services
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, Password, false);
             if (result.Succeeded)
             {
-                Token token = _tokenHandler.CreateAccesstoken(5);
+                Token token = _tokenHandler.CreateAccesstoken(15, user);
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
                 return token;
 
@@ -136,7 +136,7 @@ namespace EcommerceAPI.Persistence.Services
 
             if (user != null && user.RefreshTokenExpireDate > DateTime.UtcNow)
             {
-                Token token = _tokenHandler.CreateAccesstoken(15);
+                Token token = _tokenHandler.CreateAccesstoken(15,user);
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
                 return token;
             }

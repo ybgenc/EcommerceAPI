@@ -16,15 +16,21 @@ using EcommerceAPI.Persistence.Repositories.ProductImageRepository;
 using EcommerceAPI.Persistence.Repositories.ProductRepository;
 using EcommerceAPI.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcommerceAPI.Persistence
 {
     public static class ServiceRegistiration
     {
-        public static void AddPersistenceServices(this IServiceCollection services)
+        
+
+
+        public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=EcommerceDb;"));
+           // services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=EcommerceDb;")); 
+
+            services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgreSQL"))); 
 
             services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<EcommerceAPIDbContext>();
 

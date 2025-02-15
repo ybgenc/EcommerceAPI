@@ -18,16 +18,19 @@ namespace EcommerceAPI.API.Controllers
     {
 
         readonly IMediator _mediator;
+        readonly ILogger<ProductController> _logger;
 
-        public ProductController(IMediator mediator)
+        public ProductController(IMediator mediator, ILogger<ProductController> logger)
         {
 
             _mediator = mediator;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
         {
+            _logger.LogInformation("get all product 'controller'");
             GetAllProductQueryResponse response = await _mediator.Send(getAllProductQueryRequest);
             return Ok(response);
 
@@ -55,7 +58,7 @@ namespace EcommerceAPI.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(DeleteProductCommandRequest deleteProductCommandRequest)
+        public async Task<IActionResult> Delete([FromRoute] DeleteProductCommandRequest deleteProductCommandRequest)
         {
             await _mediator.Send(deleteProductCommandRequest);
             return Ok();

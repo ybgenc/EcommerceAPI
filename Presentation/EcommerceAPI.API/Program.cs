@@ -1,3 +1,4 @@
+using EcommerceAPI.API.Configurations.ColumnWriters;
 using EcommerceAPI.Application;
 using EcommerceAPI.Application.Validators.Products;
 using EcommerceAPI.Infrastructure;
@@ -7,19 +8,57 @@ using EcommerceAPI.Infrastructure.Services.Storage.Local;
 using EcommerceAPI.Persistence;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Context;
+using Serilog.Core;
+using Serilog.Sinks.PostgreSQL;
+using System.Security.Claims;
 using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddPersistenceServices();
+builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddInfrastructureServices();
 builder.Services.AddApplicationServices();
 
 builder.Services.AddStorage<AzureStorage>();
 //builder.Services.AddStorage<LocalStorage>();
+
+Logger log = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log.txt")
+    .WriteTo.Seq(builder.Configuration["Seq:SeqServerUrl"])
+    .WriteTo.PostgreSQL(builder.Configuration.GetConnectionString("PostgreSQL"),"logs", 
+                                                                  needAutoCreateTable:true, 
+                                                                  columnOptions: new Dictionary<string, ColumnWriterBase>
+                                                                      {
+                                                                          {"message", new RenderedMessageColumnWriter()},
+                                                                          {"message_template", new MessageTemplateColumnWriter()},
+                                                                          {"level", new LevelColumnWriter()},
+                                                                          {"timestamp", new TimestampColumnWriter()},
+                                                                          {"exception", new ExceptionColumnWriter()},
+                                                                          {"log_event", new LogEventSerializedColumnWriter()},
+                                                                          {"username", new UsernameColumnWriter()}
+                                                                      })
+    .MinimumLevel.Information()
+    .CreateLogger();
+builder.Host.UseSerilog(log);
+
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = HttpLoggingFields.All;
+    logging.MediaTypeOptions.AddText("application/javascript");
+    logging.RequestHeaders.Add("sec-ch-ua");
+    logging.ResponseHeaders.Add("MyResponseHeader");
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
+});
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("Admin", options =>
 {
@@ -31,16 +70,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuerSigningKey = true,
 
         ValidAudience = builder.Configuration["Token:Audience"],
-        ValidIssuer = builder.Configuration["Token:Isssuer"],
+        ValidIssuer = builder.Configuration["Token:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SignInKey"])),
-        LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false
+        LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
+        NameClaimType = ClaimTypes.Name
 
     };
+});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
 });
 
 
 
-builder.Services.AddCors(options => options.AddDefaultPolicy( policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(options => options.AddDefaultPolicy( policy => policy.WithOrigins("http://localhost:4200","https://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
 
 builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
                 .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>())
@@ -51,22 +95,37 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+ 
 // Configure the HTTP request pipeline. 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors();
 
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication();
+app.UseCors();
+app.UseAuthentication();  
 app.UseAuthorization();
 
-app.MapControllers();
+app.Use(async (context, next) =>
+{
+    var identity = context.User?.Identity;
 
- app.Run();
+    Console.WriteLine($"IsAuthenticated: {identity?.IsAuthenticated}");
+    Console.WriteLine($"Username: {identity?.Name}");
+
+    var username = identity?.IsAuthenticated == true ? identity.Name : "Anonymous";
+    LogContext.PushProperty("username", username);
+
+    await next();
+});
+
+app.UseSerilogRequestLogging();  // Serilog burada çalýþmalý
+app.UseHttpLogging();
+
+app.MapControllers();
+app.Run();
+

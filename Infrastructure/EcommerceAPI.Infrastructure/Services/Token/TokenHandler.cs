@@ -1,7 +1,9 @@
 ﻿using EcommerceAPI.Application.Abstraction.Token;
+using EcommerceAPI.Domain.Entities.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Tokens = EcommerceAPI.Application.DTOs;
@@ -16,7 +18,7 @@ namespace EcommerceAPI.Infrastructure.Services.Token
             _configuration = configuration;
         }
 
-        public Application.DTOs.Token CreateAccesstoken(int second)
+        public Tokens.Token CreateAccesstoken(int second, AppUser appUser)
         {
             Tokens.Token token = new Tokens.Token();
 
@@ -25,20 +27,22 @@ namespace EcommerceAPI.Infrastructure.Services.Token
             SigningCredentials signingCredentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
             token.ExpireDate = DateTime.UtcNow.AddSeconds(second);
-            JwtSecurityToken securityToken = new(audience: _configuration["Token : Audience"],
-                                                 issuer: _configuration["Token : Issuer"],
-                                                 expires: token.ExpireDate,
-                                                 notBefore: DateTime.UtcNow,
-                                                 signingCredentials: signingCredentials
-                                                 );
-            JwtSecurityTokenHandler tokenHandler = new();
+            JwtSecurityToken securityToken = new(
+                audience: _configuration["Token:Audience"],
+                issuer: _configuration["Token:Issuer"],
+                expires: token.ExpireDate,
+                notBefore: DateTime.UtcNow,
+                signingCredentials: signingCredentials,
+                claims: new List<Claim> { new(ClaimTypes.Name, appUser.UserName) }
+            );
 
-            token.AccessToken =  tokenHandler.WriteToken(securityToken);
+            JwtSecurityTokenHandler tokenHandler = new();
+            token.AccessToken = tokenHandler.WriteToken(securityToken);
             token.RefreshToken = RefreshToken();
 
             return token;
-
         }
+
 
         public string RefreshToken()
         {
@@ -51,3 +55,4 @@ namespace EcommerceAPI.Infrastructure.Services.Token
         }
     }
 }
+
