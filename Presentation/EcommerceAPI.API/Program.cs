@@ -28,13 +28,18 @@ builder.Services.AddApplicationServices();
 builder.Services.AddStorage<AzureStorage>();
 //builder.Services.AddStorage<LocalStorage>();
 
+
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+
+builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
+                .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>())
+                .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 Logger log = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("logs/log.txt")
-    .WriteTo.Seq(builder.Configuration["Seq:SeqServerUrl"])
-    .WriteTo.PostgreSQL(builder.Configuration.GetConnectionString("PostgreSQL"),"logs", 
-                                                                  needAutoCreateTable:true, 
+    .WriteTo.PostgreSQL(builder.Configuration.GetConnectionString("PostgreSQL"), "logs",
+                                                                  needAutoCreateTable: true,
                                                                   columnOptions: new Dictionary<string, ColumnWriterBase>
                                                                       {
                                                                           {"message", new RenderedMessageColumnWriter()},
@@ -59,40 +64,28 @@ builder.Services.AddHttpLogging(logging =>
     logging.ResponseBodyLogLimit = 4096;
 });
 
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("Admin", options =>
-{
-    options.TokenValidationParameters = new()
-    {
-        ValidateAudience = true,
-        ValidateIssuer = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-
-        ValidAudience = builder.Configuration["Token:Audience"],
-        ValidIssuer = builder.Configuration["Token:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SignInKey"])),
-        LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
-        NameClaimType = ClaimTypes.Name
-
-    };
-});
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-});
-
-
-
-builder.Services.AddCors(options => options.AddDefaultPolicy( policy => policy.WithOrigins("http://localhost:4200","https://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
-
-builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
-                .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>())
-                .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer("Admin", options =>
+    {
+        options.TokenValidationParameters = new()
+        {
+            ValidateAudience = true, 
+            ValidateIssuer = true, 
+            ValidateLifetime = true, 
+            ValidateIssuerSigningKey = true, 
+
+            ValidAudience = builder.Configuration["Token:Audience"],
+            ValidIssuer = builder.Configuration["Token:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SignInKey"])),
+            LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
+            NameClaimType = ClaimTypes.Name 
+        };
+    });
+
 
 var app = builder.Build();
  
@@ -104,27 +97,23 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-
-app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
+app.UseHttpLogging();
 app.UseCors();
-app.UseAuthentication();  
+app.UseHttpsRedirection();
+
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.Use(async (context, next) =>
 {
     var identity = context.User?.Identity;
-
-    Console.WriteLine($"IsAuthenticated: {identity?.IsAuthenticated}");
-    Console.WriteLine($"Username: {identity?.Name}");
-
     var username = identity?.IsAuthenticated == true ? identity.Name : "Anonymous";
     LogContext.PushProperty("username", username);
-
     await next();
 });
 
-app.UseSerilogRequestLogging();  // Serilog burada çalýþmalý
-app.UseHttpLogging();
 
 app.MapControllers();
 app.Run();

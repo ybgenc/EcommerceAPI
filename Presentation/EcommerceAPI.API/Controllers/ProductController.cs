@@ -14,6 +14,8 @@ namespace EcommerceAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Admin")]
+    
     public class ProductController : ControllerBase
     {
 
@@ -28,6 +30,7 @@ namespace EcommerceAPI.API.Controllers
         }
 
         [HttpGet]
+        
         public async Task<IActionResult> GetAll([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
         {
             _logger.LogInformation("get all product 'controller'");
