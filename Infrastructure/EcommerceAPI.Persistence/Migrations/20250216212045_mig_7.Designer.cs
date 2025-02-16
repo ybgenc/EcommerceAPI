@@ -3,6 +3,7 @@ using System;
 using EcommerceAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcommerceAPI.Persistence.Migrations
 {
     [DbContext(typeof(EcommerceAPIDbContext))]
-    partial class EcommerceAPIDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250216212045_mig_7")]
+    partial class mig_7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -389,9 +391,6 @@ namespace EcommerceAPI.Persistence.Migrations
             modelBuilder.Entity("EcommerceAPI.Domain.Entities.ProductImageFile", b =>
                 {
                     b.HasBaseType("EcommerceAPI.Domain.Entities.File");
-
-                    b.Property<bool>("ShowCase")
-                        .HasColumnType("boolean");
 
                     b.HasDiscriminator().HasValue("ProductImageFile");
                 });

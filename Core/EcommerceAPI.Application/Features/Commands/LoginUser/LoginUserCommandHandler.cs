@@ -17,7 +17,7 @@ namespace EcommerceAPI.Application.Features.Commands.LoginUser
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
-            Token token = await _authService.LoginAsync(request.UsernameOrEmail,request.Password,150000);
+            Token token = await _authService.LoginAsync(request.UsernameOrEmail,request.Password,900);
             if (token == null)
                 throw new UserNotFoundException();
             else

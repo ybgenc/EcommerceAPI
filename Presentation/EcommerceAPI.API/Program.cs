@@ -6,6 +6,8 @@ using EcommerceAPI.Infrastructure.Filters;
 using EcommerceAPI.Infrastructure.Services.Storage.Azure;
 using EcommerceAPI.Infrastructure.Services.Storage.Local;
 using EcommerceAPI.Persistence;
+using EcommerceAPI.SignalR;
+using EcommerceAPI.SignalR.Hubs;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
@@ -24,12 +26,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddInfrastructureServices();
 builder.Services.AddApplicationServices();
+builder.Services.AddSignalRServices();
 
-builder.Services.AddStorage<AzureStorage>();
-//builder.Services.AddStorage<LocalStorage>();
+//builder.Services.AddStorage<AzureStorage>();
+builder.Services.AddStorage<LocalStorage>();
 
 
-builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200", "http://localhost:4200")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
 
 builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
                 .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>())
@@ -99,7 +111,7 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseHttpLogging();
-app.UseCors();
+app.UseCors("AllowLocalhost");
 app.UseHttpsRedirection();
 
 
@@ -114,7 +126,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
-
+app.MapHubs();  
 app.MapControllers();
 app.Run();
 

@@ -54,7 +54,7 @@ namespace EcommerceAPI.Persistence.Services
             {
                 await _userManager.AddLoginAsync(user, info);
                 Token token = _tokenHandler.CreateAccesstoken(tokenLifeTime, user);
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 600 );
                 return token;
             }
             else
@@ -130,18 +130,20 @@ namespace EcommerceAPI.Persistence.Services
                 throw new AuthenticationErrorException();
 
         }
-        public async Task<Token> RefreshTokenLogin(string RefreshToken)
+        public async Task<Token> RefreshTokenLogin(string RefreshToken , int refreshTokenLifeTime)
         {
            AppUser? user = await  _userManager.Users.FirstOrDefaultAsync(x => x.RefreshToken == RefreshToken);
 
             if (user != null && user.RefreshTokenExpireDate > DateTime.UtcNow)
             {
                 Token token = _tokenHandler.CreateAccesstoken(15,user);
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, refreshTokenLifeTime);
                 return token;
             }
             else
                 throw new UserNotFoundException();
         }
+
+
     }
 }

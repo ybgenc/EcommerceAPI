@@ -1,5 +1,6 @@
 ﻿using EcommerceAPI.Application.Repositories.ProductRepository;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace EcommerceAPI.Application.Features.Queries.Product.GetAllProduct
@@ -17,14 +18,18 @@ namespace EcommerceAPI.Application.Features.Queries.Product.GetAllProduct
         public async Task<GetAllProductQueryResponse> Handle(GetAllProductQueryRequest request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("get all products");
-            var products = _productReadRepository.GetAll(false).Select(p => new
+
+            var products = _productReadRepository.GetAll(false).Include(p => p.ProductImageFiles).Select(p => new
             {
                 p.Id,
                 p.Name,
                 p.Stock,
                 p.Price,
+                p.Title,
+                p.Description,
                 p.CreatedDate,
-                p.UpdatedDate
+                p.UpdatedDate,
+                p.ProductImageFiles
             });
 
             return new()
