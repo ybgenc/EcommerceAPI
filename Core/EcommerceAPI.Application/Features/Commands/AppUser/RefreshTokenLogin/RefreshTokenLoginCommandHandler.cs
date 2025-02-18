@@ -24,7 +24,7 @@ namespace EcommerceAPI.Application.Features.Commands.AppUser.RefreshTokenLogin
 
         public async Task<RefreshTokenLoginCommandResponse> Handle(RefreshTokenLoginCommandRequest request, CancellationToken cancellationToken)
         {
-            var token = await _authService.RefreshTokenLogin(request.RefreshToken);
+            var token = await _authService.RefreshTokenLogin(request.RefreshToken, 600);
 
             if (token == null)
                 throw new LoginErrorException();

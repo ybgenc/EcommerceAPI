@@ -32,7 +32,7 @@ namespace EcommerceAPI.Persistence.Services
             _userService = userService;
         }
 
-        async Task<Token> ExternalLogin(AppUser user, string Email, string Name, UserLoginInfo info)
+        async Task<Token> ExternalLogin(AppUser user, string Email, string Name, UserLoginInfo info, int tokenLifeTime)
         {
             if (user == null)
             {
@@ -53,8 +53,8 @@ namespace EcommerceAPI.Persistence.Services
             if (user != null)
             {
                 await _userManager.AddLoginAsync(user, info);
-                Token token = _tokenHandler.CreateAccesstoken(15, user);
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
+                Token token = _tokenHandler.CreateAccesstoken(tokenLifeTime, user);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 600 );
                 return token;
             }
             else
@@ -63,7 +63,7 @@ namespace EcommerceAPI.Persistence.Services
            
         }
 
-        public async Task<Token> FacebookLoginAsync(string authToken)
+        public async Task<Token> FacebookLoginAsync(string authToken, int tokenLifeTime)
         {
 
             string clientId = _configuration["FacebookLogin:ClientId"];
@@ -86,14 +86,14 @@ namespace EcommerceAPI.Persistence.Services
 
                 AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
-                return await ExternalLogin(user, userInfoRes.Email, userInfoRes.Name, info);
+                return await ExternalLogin(user, userInfoRes.Email, userInfoRes.Name, info, tokenLifeTime);
             }
             else
                 throw new Exception("Facebook authentication failed");
         }
 
 
-        public async Task<Token> GoogleLoginAsync(string IdToken)
+        public async Task<Token> GoogleLoginAsync(string IdToken, int tokenLifeTime)
         {
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
@@ -104,11 +104,11 @@ namespace EcommerceAPI.Persistence.Services
 
             AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
-            return await ExternalLogin(user, payload.Email, payload.Name, info);
+            return await ExternalLogin(user, payload.Email, payload.Name, info, tokenLifeTime);
          
         }
 
-        public async Task<Token> LoginAsync(string UsernameOrEmail, string Password)
+        public async Task<Token> LoginAsync(string UsernameOrEmail, string Password, int tokenLifeTime)
         {
 
             AppUser user = await _userManager.FindByNameAsync(UsernameOrEmail);
@@ -121,7 +121,7 @@ namespace EcommerceAPI.Persistence.Services
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, Password, false);
             if (result.Succeeded)
             {
-                Token token = _tokenHandler.CreateAccesstoken(15, user);
+                Token token = _tokenHandler.CreateAccesstoken(tokenLifeTime, user);
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
                 return token;
 
@@ -130,18 +130,20 @@ namespace EcommerceAPI.Persistence.Services
                 throw new AuthenticationErrorException();
 
         }
-        public async Task<Token> RefreshTokenLogin(string RefreshToken)
+        public async Task<Token> RefreshTokenLogin(string RefreshToken , int refreshTokenLifeTime)
         {
            AppUser? user = await  _userManager.Users.FirstOrDefaultAsync(x => x.RefreshToken == RefreshToken);
 
             if (user != null && user.RefreshTokenExpireDate > DateTime.UtcNow)
             {
                 Token token = _tokenHandler.CreateAccesstoken(15,user);
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 10);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, refreshTokenLifeTime);
                 return token;
             }
             else
                 throw new UserNotFoundException();
         }
+
+
     }
 }

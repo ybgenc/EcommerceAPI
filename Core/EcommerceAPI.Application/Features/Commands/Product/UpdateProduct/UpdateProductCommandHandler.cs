@@ -21,6 +21,8 @@ namespace EcommerceAPI.Application.Features.Commands.Product.UpdateProduct
             product.Name = request.Name;
             product.Price = request.Price;
             product.Stock = request.Stock;
+            product.Description = request.Description;
+            product.Title = request.Title;
             await _productWriteRepository.SaveAsync();
             return new();
         }
