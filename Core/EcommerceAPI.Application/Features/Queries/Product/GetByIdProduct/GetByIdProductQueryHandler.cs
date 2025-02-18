@@ -19,7 +19,9 @@ namespace EcommerceAPI.Application.Features.Queries.Product.GetByIdProduct
             {
                 Name = product.Name,
                 Price = product.Price,
-                Stock = product.Stock
+                Stock = product.Stock,
+                Description = product.Description,
+                Title = product.Title,
             };
         }
     }

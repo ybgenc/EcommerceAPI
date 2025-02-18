@@ -17,7 +17,7 @@ namespace EcommerceAPI.Application.Features.Commands.Product.CreateProduct
 
         public async Task<CreateProductCommandResponse> Handle(CreateProductCommandRequest request, CancellationToken cancellationToken)
         {
-            await _productWriteRepository.AddAsync(new() { Name = request.Name, Price = request.Price, Stock = request.Stock });
+            await _productWriteRepository.AddAsync(new() { Name = request.Name, Price = request.Price, Stock = request.Stock, Description = request.Description, Title = request.Title });
             await _productWriteRepository.SaveAsync();
             await _productHubService.ProductAddedMessageAsync($" new product {request.Name} added successfully");
             return new();
