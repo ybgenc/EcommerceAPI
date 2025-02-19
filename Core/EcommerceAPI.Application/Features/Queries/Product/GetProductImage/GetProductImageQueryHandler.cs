@@ -27,8 +27,10 @@ namespace EcommerceAPI.Application.Features.Queries.Product.GetProductImage
             {
                 Path = $"{_configuration["BaseStorageUrl"]}/{p.Path}",
                 FileName = p.FileName,
+                ShowCase = p.ShowCase,
                 Id = p.Id
             }).ToList();
+
         }
 
     }

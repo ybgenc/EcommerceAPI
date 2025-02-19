@@ -1,6 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using EcommerceAPI.Application.Azure;
+using EcommerceAPI.Application.Abstraction.Storage.Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
