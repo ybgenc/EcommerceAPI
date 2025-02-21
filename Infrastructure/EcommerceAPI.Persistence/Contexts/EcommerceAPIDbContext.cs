@@ -18,7 +18,19 @@ namespace EcommerceAPI.Persistence.Contexts
         public DbSet<File> Files { get; set; }
         public DbSet<ProductImageFile> ProductImageFiles { get; set; }
         public DbSet<InvoiceFile> InvoiceFiles { get; set; }
+        public DbSet<Basket> Baskets { get; set; }
+        public DbSet<BasketItem> BasketItems{ get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Order>().HasKey(o => o.Id);
+
+            modelBuilder.Entity<Basket>().HasOne(b => b.Order)
+                                         .WithOne(o => o.Basket)
+                                         .HasForeignKey<Order>(b=> b.Id);
+            base.OnModelCreating(modelBuilder);
+
+        }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

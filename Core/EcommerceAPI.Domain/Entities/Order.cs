@@ -11,5 +11,6 @@ namespace EcommerceAPI.Domain.Entities
 
         public Guid CustomerId { get; set; }
         public Customer Customer { get; set; }
+        public Basket Basket { get; set; }
     }
 }

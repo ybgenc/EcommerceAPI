@@ -1,5 +1,7 @@
 ﻿using EcommerceAPI.Application.Abstraction.Services;
 using EcommerceAPI.Application.Abstraction.Services.Authentication;
+using EcommerceAPI.Application.Repositories.BasketItemRepository;
+using EcommerceAPI.Application.Repositories.BasketRepository;
 using EcommerceAPI.Application.Repositories.CustomerRepository;
 using EcommerceAPI.Application.Repositories.FileRepository;
 using EcommerceAPI.Application.Repositories.InvoiceRepository;
@@ -8,6 +10,8 @@ using EcommerceAPI.Application.Repositories.ProductImageFileRepository;
 using EcommerceAPI.Application.Repositories.ProductRepository;
 using EcommerceAPI.Domain.Entities.Identity;
 using EcommerceAPI.Persistence.Contexts;
+using EcommerceAPI.Persistence.Repositories.BasketItemRepository;
+using EcommerceAPI.Persistence.Repositories.BasketRepository;
 using EcommerceAPI.Persistence.Repositories.CustomerRepository;
 using EcommerceAPI.Persistence.Repositories.FileRepository;
 using EcommerceAPI.Persistence.Repositories.InvoiceRepository;
@@ -46,12 +50,17 @@ namespace EcommerceAPI.Persistence
             services.AddScoped<IProductImageReadRepository,ProductImageReadRepository>();
             services.AddScoped<IInvoiceReadRepository,InvoceReadRepository>();
             services.AddScoped<IInvoiceWriteRepository, InvoiceWriteRepository>();
+            services.AddScoped<IBasketReadRepository, BasketReadRepository>();
+            services.AddScoped<IBasketWriteRepository, BasketWriteRepository>();
+            services.AddScoped<IBasketItemReadRepository, BasketItemReadRepository>();
+            services.AddScoped<IBasketItemWriteRepository,BasketItemWriteRepository>();
 
 
             services.AddScoped<IUserService, UserService >();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IExternalAuth, AuthService>();
             services.AddScoped<IInternalAuth, AuthService>();
+            services.AddScoped<IBasketService, BasketService>();
 
         }
     }

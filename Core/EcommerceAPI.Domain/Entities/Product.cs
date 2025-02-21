@@ -13,6 +13,7 @@ namespace EcommerceAPI.Domain.Entities
         public string Description { get; set; }
         public ICollection<Order> Orders { get; set; }
         public ICollection<ProductImageFile> ProductImageFiles { get; set; }
+        public ICollection<BasketItem> BasketItems { get; set; }
 
        
     }
