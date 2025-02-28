@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EcommerceAPI.Application.ViewModels.Basket
+namespace EcommerceAPI.Application.DTOs.Baskets
 {
-    public class VM_Create_BasketItems
+    public class Create_BasketItem_DTO
     {
         public string ProductId { get; set; }
         public int Quantity { get; set; }

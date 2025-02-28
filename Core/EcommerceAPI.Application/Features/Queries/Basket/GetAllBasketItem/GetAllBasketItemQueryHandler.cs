@@ -24,13 +24,14 @@ namespace EcommerceAPI.Application.Features.Queries.Basket.GetAllBasketItem
         public async Task<List<GetAllBasketItemQueryResponse>> Handle(GetAllBasketItemQueryRequest request, CancellationToken cancellationToken)
         {
             var basketItems = await _basketService.GetBasketItemAsync();
-
+            var basketId =  _basketService.GetBasketId?.Id.ToString();
             return basketItems.Select(item => new GetAllBasketItemQueryResponse
             {
                 BasketItemId = item.Id.ToString(),
                 Name = item.Product.Name,
                 Price = item.Product.Price,
-                Quantity = item.Quantity
+                Quantity = item.Quantity,
+                BasketId = basketId,
             }).ToList();
 
 

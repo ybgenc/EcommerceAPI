@@ -12,5 +12,7 @@ namespace EcommerceAPI.Application.Features.Queries.Basket.GetAllBasketItem
         public string Name {  get; set; } 
         public float Price {  get; set; } 
         public int Quantity {  get; set; } 
+
+        public string? BasketId { get; set; }
     }
 }

@@ -6,8 +6,6 @@ namespace EcommerceAPI.Domain.Entities
     {
         public string Name { get; set; }
 
-        public ICollection<Order> Orders { get; set; }
-
     }
 }
  

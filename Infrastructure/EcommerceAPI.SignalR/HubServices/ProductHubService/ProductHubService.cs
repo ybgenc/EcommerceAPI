@@ -1,5 +1,5 @@
-﻿using EcommerceAPI.Application.Abstraction.Hubs;
-using EcommerceAPI.SignalR.Hubs;
+﻿using EcommerceAPI.Application.Abstraction.Hubs.ProductHub;
+using EcommerceAPI.SignalR.Hubs.ProductHub;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EcommerceAPI.SignalR.HubServices
+namespace EcommerceAPI.SignalR.HubServices.ProductHubService
 {
     public class ProductHubService : IProductHubService
     {

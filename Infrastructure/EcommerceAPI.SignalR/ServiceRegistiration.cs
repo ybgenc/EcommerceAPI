@@ -1,11 +1,8 @@
-﻿using EcommerceAPI.Application.Abstraction.Hubs;
-using EcommerceAPI.SignalR.HubServices;
+﻿using EcommerceAPI.Application.Abstraction.Hubs.OrderHub;
+using EcommerceAPI.Application.Abstraction.Hubs.ProductHub;
+using EcommerceAPI.SignalR.HubServices.OrderHubService;
+using EcommerceAPI.SignalR.HubServices.ProductHubService;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EcommerceAPI.SignalR
 {
@@ -15,6 +12,7 @@ namespace EcommerceAPI.SignalR
         {
             collection.AddSignalR();
             collection.AddTransient<IProductHubService, ProductHubService>();
+            collection.AddTransient<IOrderHubService, OrderHubService>();
         }
     }
 }

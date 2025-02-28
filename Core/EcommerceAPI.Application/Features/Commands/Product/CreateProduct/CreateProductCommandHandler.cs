@@ -1,4 +1,4 @@
-﻿using EcommerceAPI.Application.Abstraction.Hubs;
+﻿using EcommerceAPI.Application.Abstraction.Hubs.ProductHub;
 using EcommerceAPI.Application.Repositories.ProductRepository;
 using MediatR;
 

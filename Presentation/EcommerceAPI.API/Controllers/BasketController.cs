@@ -29,24 +29,23 @@ namespace EcommerceAPI.API.Controllers
             return Ok(response);
 
         }
-        [HttpPost("action")]
+        [HttpPost("AddItemToBasket")]
         [Authorize(AuthenticationSchemes = "Admin")]
         public async Task<IActionResult> AddItemToBasket([FromBody] AddBasketItemCommandRequest request)
         {
             AddBasketItemCommandResponse response = await _mediator.Send(request);
             return Ok(response);
         }
-        [HttpPut("action")]
+        [HttpPut("UpdateItemQuantity")]
         [Authorize(AuthenticationSchemes = "Admin")]
 
-        public async Task<IActionResult> UpdateItemQuantity(UpdateBasketItemCommandRequest request)
+        public async Task<IActionResult> UpdateItemQuantity([FromBody] UpdateBasketItemCommandRequest request)
         {
             UpdateBasketItemCommandResponse response = await _mediator.Send(request);
             return Ok(response);
         }
         [HttpDelete("{BasketItemId}")]
         [Authorize(AuthenticationSchemes = "Admin")]
-
         public async Task<IActionResult> DeleteBasketItem([FromRoute] DeleteBasketItemCommandRequest request)
         {
             DeleteBasketItemCommandResponse response = await _mediator.Send(request);

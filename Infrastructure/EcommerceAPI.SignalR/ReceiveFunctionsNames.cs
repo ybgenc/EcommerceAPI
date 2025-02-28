@@ -9,5 +9,7 @@ namespace EcommerceAPI.SignalR
     public static class ReceiveFunctionsNames
     {
         public const string ProductAddedMessage = "receiveProductAddedMessage";
+        public const string OrderAddedMessage = "receiveOrderAddedMessage";
+
     }
 }

@@ -1,8 +1,8 @@
 ﻿using EcommerceAPI.Application.Abstraction.Services;
+using EcommerceAPI.Application.DTOs.Baskets;
 using EcommerceAPI.Application.Repositories.BasketItemRepository;
 using EcommerceAPI.Application.Repositories.BasketRepository;
 using EcommerceAPI.Application.Repositories.OrderRepository;
-using EcommerceAPI.Application.ViewModels.Basket;
 using EcommerceAPI.Domain.Entities;
 using EcommerceAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +27,8 @@ namespace EcommerceAPI.Persistence.Services
 
         readonly IBasketItemReadRepository _basketItemReadRepository;
         readonly IBasketItemWriteRepository _basketItemWriteRepository;
+
+
         public BasketService(IHttpContextAccessor httpContextAccessor, UserManager<AppUser> userManager, IOrderReadRepository orderReadRepository, IBasketWriteRepository basketWriteRepository, IBasketItemReadRepository basketItemReadRepository, IBasketItemWriteRepository basketItemWriteRepository, IBasketReadRepository basketReadRepository)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -72,7 +74,7 @@ namespace EcommerceAPI.Persistence.Services
 
         }
 
-        public async Task AddItemToBasketAsync(VM_Create_BasketItems basketItem)
+        public async Task AddItemToBasketAsync(Create_BasketItem_DTO basketItem)
         {
             Basket? basket = await getUserBasket();
             if (basket != null)
@@ -121,7 +123,7 @@ namespace EcommerceAPI.Persistence.Services
             return getBasketItems?.BasketItems?.ToList();
         }
 
-        public async Task UpdateBasketItemAsync(VM_Update_BasketItem basketItem)
+        public async Task UpdateBasketItemAsync(Update_BasketItem_DTO basketItem)
         {
             BasketItem? existItem = await _basketItemReadRepository.GetByIdAsync(basketItem.BasketItemId);
 
@@ -139,6 +141,19 @@ namespace EcommerceAPI.Persistence.Services
 
             await _basketItemWriteRepository.SaveAsync();  
         }
+
+        public Basket? GetBasketId
+        {
+            get
+            {
+                Basket? basket = getUserBasket().Result;
+                return basket;
+            }
+        }
+          
+
+
+
 
     }
 }

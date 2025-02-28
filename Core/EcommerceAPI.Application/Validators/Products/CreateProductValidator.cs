@@ -1,4 +1,4 @@
-﻿using EcommerceAPI.Application.ViewModels.Products;
+﻿using EcommerceAPI.Application.DTOs.Products;
 using EcommerceAPI.Domain.Entities;
 using FluentValidation;
 using System;
@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace EcommerceAPI.Application.Validators.Products
 {
-    public class CreateProductValidator : AbstractValidator<VMCreateProduct>
+    public class CreateProductValidator : AbstractValidator<Create_Product_DTO>
     {
         public CreateProductValidator()
         {
