@@ -1,4 +1,5 @@
 ﻿using EcommerceAPI.Application.DTOs.Orders;
+using EcommerceAPI.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,7 @@ namespace EcommerceAPI.Application.Abstraction.Services
     public interface IOrderService 
     {
         Task CreateOrderAsync(Create_Order_DTO createOrder);
+
+        Task<List<Order>> GetOrdersAsync();
     }
 }
