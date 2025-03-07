@@ -21,15 +21,11 @@ namespace EcommerceAPI.Persistence.Services
     {
         readonly IOrderWriteRepository _orderWriteRepository;
         readonly IOrderReadRepository _orderReadRepository;
-        readonly IHttpContextAccessor _httpContextAccessor;
-        readonly IBasketService _basketService;
 
-        public OrderService(IOrderWriteRepository orderWriteRepository, IBasketService basketService, IOrderReadRepository orderReadRepository, IHttpContextAccessor httpContextAccessor)
+        public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository)
         {
             _orderWriteRepository = orderWriteRepository;
             _orderReadRepository = orderReadRepository;
-            _httpContextAccessor = httpContextAccessor;
-            _basketService = basketService;
 
         }
 
@@ -61,6 +57,18 @@ namespace EcommerceAPI.Persistence.Services
         {
             var orders = await _orderReadRepository.Table.ToListAsync();
             return orders;
+        }
+
+        public async Task<Order> OrderMailDetail()
+        {
+            var lastOrder = await _orderReadRepository.Table
+                .Include(o => o.Basket)
+                .ThenInclude(b => b.BasketItems)
+                .ThenInclude(bi => bi.Product)
+                .OrderByDescending(o => o.CreatedDate) 
+                .FirstOrDefaultAsync(); 
+
+            return lastOrder;
         }
     }
 }

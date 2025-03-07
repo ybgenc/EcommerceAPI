@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EcommerceAPI.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace EcommerceAPI.Application.Abstraction.Services
         Task SendEmailAsync(string to, string subject, string body, bool isBodyHtml = true);
         Task SendEmailAsync(string[] tos, string subject, string body, bool isBodyHtml = true);
         Task SendPasswordResetEmailAsync(string to, string userId, string resetToken);
+        Task SendOrderMailAsync(Order order );
 
     }
 }
