@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EcommerceAPI.Application.Features.Queries.Order.GetOrder
+namespace EcommerceAPI.Application.Features.Queries.Order.GetOrderDetail
 {
-    public class GetOrderQueryRequest : IRequest<GetOrderQueryResponse>
+    public class GetOrderQueryRequest : IRequest<List<GetOrderQueryResponse>>
     {
     }
 }

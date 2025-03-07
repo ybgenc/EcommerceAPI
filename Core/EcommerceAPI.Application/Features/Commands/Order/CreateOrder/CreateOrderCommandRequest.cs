@@ -11,5 +11,6 @@ namespace EcommerceAPI.Application.Features.Commands.Order.CreateOrder
     {
         public string Description { get; set; }
         public string Address { get; set; }
+        public float TotalPrice { get; set; }
     }
 }

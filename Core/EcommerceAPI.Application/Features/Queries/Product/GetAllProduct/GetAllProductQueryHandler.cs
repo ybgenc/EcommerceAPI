@@ -19,7 +19,7 @@ namespace EcommerceAPI.Application.Features.Queries.Product.GetAllProduct
         {
             _logger.LogInformation("get all products");
 
-            var products = _productReadRepository.GetAll(false).Include(p => p.ProductImageFiles).Select(p => new
+            var products = await _productReadRepository.GetAll(false).Include(p => p.ProductImageFiles).Select(p => new
             {
                 p.Id,
                 p.Name,
@@ -30,7 +30,7 @@ namespace EcommerceAPI.Application.Features.Queries.Product.GetAllProduct
                 p.CreatedDate,
                 p.UpdatedDate,
                 p.ProductImageFiles
-            });
+            }).ToListAsync();
 
             return new()
             {

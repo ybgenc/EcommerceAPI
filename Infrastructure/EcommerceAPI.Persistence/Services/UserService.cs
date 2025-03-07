@@ -34,6 +34,7 @@ namespace EcommerceAPI.Persistence.Services
             return response; ;
         }
 
+
         public async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accessTokenExpireDate, int addTimeOnAccessToken)
         {
             if (user != null)
@@ -45,6 +46,20 @@ namespace EcommerceAPI.Persistence.Services
             else
                 throw new UserNotFoundException();
             
+        }
+
+        public async Task UpdatePasswordAsync(string userId, string resetToken, string newPassword)
+        {
+            AppUser user = await _userManager.FindByIdAsync(userId);
+            if(user != null)
+            {
+                var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", resetToken);
+                if (isValid)
+                {
+                   await _userManager.ResetPasswordAsync(user, resetToken,newPassword);
+                }
+
+            }
         }
     }
 }

@@ -39,21 +39,28 @@ namespace EcommerceAPI.Persistence.Services
             {
                 Description = createOrder.Description,
                 Address = createOrder.Address,
+                TotalPrice = createOrder.TotalPrice,
                 Id =Guid.Parse( createOrder.BasketId)
             });
         }
 
 
-        public async Task<List<Order>> GetOrdersAsync()
+        public async Task<List<Order>> GetOrderDetailsAsync()
         {
-            var orders = await _orderReadRepository.Table
+            var order = await _orderReadRepository.Table 
                 .Include(o => o.Basket) 
                 .ThenInclude(b => b.BasketItems) 
                 .ThenInclude(bi => bi.Product)
                 .ToListAsync(); 
 
-            return orders;
+            return order;
         }
 
+
+        public async Task<List<Order>> GetOrdersAsync()
+        {
+            var orders = await _orderReadRepository.Table.ToListAsync();
+            return orders;
+        }
     }
 }

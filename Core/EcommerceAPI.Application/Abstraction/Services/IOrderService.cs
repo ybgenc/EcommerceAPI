@@ -12,6 +12,8 @@ namespace EcommerceAPI.Application.Abstraction.Services
     {
         Task CreateOrderAsync(Create_Order_DTO createOrder);
 
+        Task<List<Order>> GetOrderDetailsAsync();
+
         Task<List<Order>> GetOrdersAsync();
     }
 }

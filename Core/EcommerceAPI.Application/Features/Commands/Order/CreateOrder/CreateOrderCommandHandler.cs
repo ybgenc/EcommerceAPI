@@ -29,6 +29,7 @@ namespace EcommerceAPI.Application.Features.Commands.Order.CreateOrder
             {
                 Description = request.Description,
                 Address = request.Address,
+                TotalPrice = request.TotalPrice,
                 BasketId = _basketService?.GetBasketId?.Id.ToString()
             });
             await _orderWriteRepository.SaveAsync();

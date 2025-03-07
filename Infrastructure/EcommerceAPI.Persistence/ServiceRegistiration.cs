@@ -19,6 +19,7 @@ using EcommerceAPI.Persistence.Repositories.OrderRepository;
 using EcommerceAPI.Persistence.Repositories.ProductImageRepository;
 using EcommerceAPI.Persistence.Repositories.ProductRepository;
 using EcommerceAPI.Persistence.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,8 +36,12 @@ namespace EcommerceAPI.Persistence
            // services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=EcommerceDb;")); 
 
             services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgreSQL"))); 
+            services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<EcommerceAPIDbContext>().AddDefaultTokenProviders();
 
-            services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<EcommerceAPIDbContext>();
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(12);
+            });
 
             services.AddScoped<ICustomerReadRepository,CustomerReadRepository>();
             services.AddScoped<ICustomerWriteRepository,CustomerWriteRepository>();

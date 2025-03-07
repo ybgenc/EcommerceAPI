@@ -1,6 +1,8 @@
-﻿using EcommerceAPI.Application.Abstraction.Storage;
+﻿using EcommerceAPI.Application.Abstraction.Services;
+using EcommerceAPI.Application.Abstraction.Storage;
 using EcommerceAPI.Application.Abstraction.Token;
 using EcommerceAPI.Infrastructure.Enums;
+using EcommerceAPI.Infrastructure.Services;
 using EcommerceAPI.Infrastructure.Services.Storage;
 using EcommerceAPI.Infrastructure.Services.Storage.Azure;
 using EcommerceAPI.Infrastructure.Services.Storage.Local;
@@ -15,6 +17,7 @@ namespace EcommerceAPI.Infrastructure
         {
             serviceCollection.AddScoped<IStorageService, StorageService>();
             serviceCollection.AddScoped<ITokenHandler, TokenHandler>();
+            serviceCollection.AddScoped<IMailService, MailService>();
         }
         public static void AddStorage<T>(this IServiceCollection serviceCollection) where T : Storage, IStorage
         {

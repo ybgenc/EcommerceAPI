@@ -6,8 +6,10 @@ using EcommerceAPI.Application.Exceptions;
 using EcommerceAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Text;
 using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
@@ -21,8 +23,9 @@ namespace EcommerceAPI.Persistence.Services
         readonly IConfiguration _configuration;
         readonly ITokenHandler _tokenHandler;
         readonly IUserService _userService;
+        readonly IMailService _mailService;
 
-        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, System.Net.Http.IHttpClientFactory httpClientFactory, IConfiguration configuration, SignInManager<AppUser> signInManager, IUserService userService)
+        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, System.Net.Http.IHttpClientFactory httpClientFactory, IConfiguration configuration, SignInManager<AppUser> signInManager, IUserService userService, IMailService mailService)
         {
             _userManager = userManager;
             _tokenHandler = tokenHandler;
@@ -30,6 +33,7 @@ namespace EcommerceAPI.Persistence.Services
             _configuration = configuration;
             _signInManager = signInManager;
             _userService = userService;
+            _mailService = mailService;
         }
 
         async Task<Token> ExternalLogin(AppUser user, string Email, string Name, UserLoginInfo info, int tokenLifeTime)
@@ -144,6 +148,20 @@ namespace EcommerceAPI.Persistence.Services
                 throw new UserNotFoundException();
         }
 
+        public async Task ResetPasswordAsync(string email)
+        {
+            AppUser user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+               string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+               
+                byte[] resetTokenBytes = Encoding.UTF8.GetBytes(resetToken);
+                
+                resetToken = WebEncoders.Base64UrlEncode(resetTokenBytes);
+                await _mailService.SendPasswordResetEmailAsync(email, user.Id, resetToken);
+
+            }
+        }
 
     }
 }

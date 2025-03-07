@@ -1,5 +1,4 @@
 ﻿using EcommerceAPI.Application.Abstraction.Services;
-using EcommerceAPI.Domain.Entities;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -7,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EcommerceAPI.Application.Features.Queries.Order.GetOrder
+namespace EcommerceAPI.Application.Features.Queries.Order.GetOrderDetail
 {
-    public class GetOrderQueryHandler : IRequestHandler<GetOrderQueryRequest, GetOrderQueryResponse>
+    public class GetOrderQueryHandler : IRequestHandler<GetOrderQueryRequest, List<GetOrderQueryResponse>>
     {
         readonly IOrderService _orderService;
 
@@ -17,39 +16,30 @@ namespace EcommerceAPI.Application.Features.Queries.Order.GetOrder
         {
             _orderService = orderService;
         }
-        public async Task<GetOrderQueryResponse> Handle(GetOrderQueryRequest request, CancellationToken cancellationToken)
+
+        public async Task<List<GetOrderQueryResponse>> Handle(GetOrderQueryRequest request, CancellationToken cancellationToken)
         {
             var orders = await _orderService.GetOrdersAsync();
 
-            var response = orders.SelectMany(order => order.Basket.BasketItems)
-                .Select(basketItem => new
-                {
-                    OrderId = basketItem?.Basket?.Order?.Id,  
-                    OrderDate = basketItem?.Basket?.Order.CreatedDate,
-                    Name = basketItem?.Product?.Name,
-                    Price = basketItem?.Product?.Price ,  
-                    Quantity = basketItem?.Quantity,      
-                    Description = basketItem?.Basket?.Order?.Description,
-                    Address = basketItem?.Basket?.Order?.Address
-                })
-                .GroupBy(order => order.OrderId)  
-                .ToList();
-
-            var orderGroup = response.Select(group => new
+            var orderList = orders.Select(order => new GetOrderQueryResponse
             {
-                OrderId = group.Key,
-                Products = group.ToList()  
+                OrderDate = order.CreatedDate,
+                OrderId = order.Id.ToString(),
+                TotalPrice = order.TotalPrice
             }).ToList();
 
-            return new()
-            {
-                Order = orderGroup
-            };
+            var groupedOrders = orderList
+                .GroupBy(g => g.OrderId)
+                .Select(group => new GetOrderQueryResponse
+                {
+                    OrderId = group.Key, 
+                    OrderDate = group.First().OrderDate,
+                    TotalPrice = group.First().TotalPrice
+                })
+                .ToList();
+
+            return groupedOrders;
         }
-
-
-
-
 
     }
 }

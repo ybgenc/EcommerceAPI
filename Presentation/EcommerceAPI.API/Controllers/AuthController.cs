@@ -2,6 +2,7 @@
 using EcommerceAPI.Application.Features.Commands.AppUser.GoogleLogin;
 using EcommerceAPI.Application.Features.Commands.AppUser.RefreshTokenLogin;
 using EcommerceAPI.Application.Features.Commands.LoginUser;
+using EcommerceAPI.Application.Features.Commands.Mail.PasswordResetMail;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace EcommerceAPI.API.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginUserCommandRequest loginUserCommandRequest)
+        public async Task<IActionResult> Login([FromBody] LoginUserCommandRequest loginUserCommandRequest)
         {
             LoginUserCommandResponse response = await _mediator.Send(loginUserCommandRequest);
             return Ok(response);
@@ -37,10 +38,16 @@ namespace EcommerceAPI.API.Controllers
             FacebookLoginCommandResponse response = await _mediator.Send(facebookLoginCommandRequest);
             return Ok(response);
         }
-        [HttpGet("action")]
-        public async Task<IActionResult> RefreshTokenLogin( [FromQuery] RefreshTokenLoginCommandRequest refreshTokenLoginCommandRequest)
+        [HttpPost("RefreshTokenLogin")]
+        public async Task<IActionResult> RefreshTokenLogin( [FromBody] RefreshTokenLoginCommandRequest refreshTokenLoginCommandRequest)
         {
             RefreshTokenLoginCommandResponse response = await _mediator.Send(refreshTokenLoginCommandRequest);
+            return Ok(response);
+        }
+        [HttpPost("Password-reset")]
+        public async Task<IActionResult> PasswordReset([FromBody]PasswordResetMailCommandRequest request)
+        {
+            PasswordResetMailCommandResponse response = await _mediator.Send(request);
             return Ok(response);
         }
     }
