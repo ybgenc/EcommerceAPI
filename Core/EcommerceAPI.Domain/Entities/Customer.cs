@@ -4,7 +4,7 @@ namespace EcommerceAPI.Domain.Entities
 {
     public class Customer : BaseEntitiy
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
     }
 }

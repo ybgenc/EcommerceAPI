@@ -77,7 +77,7 @@ namespace EcommerceAPI.Persistence.Services
             string accessTokenResponse = await _httpClient.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={clientId}&client_secret={clientSecret}&grant_type=client_credentials");
 
             FacebookToken? facebookToken = JsonSerializer.Deserialize<FacebookToken>(accessTokenResponse);
-            string userAccessTokenValidation = await _httpClient.GetStringAsync($"https://graph.facebook.com/debug_token?input_token={authToken}&access_token={facebookToken.AccessToken}");
+            string userAccessTokenValidation = await _httpClient.GetStringAsync($"https://graph.facebook.com/debug_token?input_token={authToken}&access_token={facebookToken?.AccessToken}");
 
             FacebookAccessTokenValidation? validation = JsonSerializer.Deserialize<FacebookAccessTokenValidation>(userAccessTokenValidation);
 

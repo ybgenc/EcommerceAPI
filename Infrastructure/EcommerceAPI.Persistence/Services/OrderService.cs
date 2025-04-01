@@ -48,7 +48,6 @@ namespace EcommerceAPI.Persistence.Services
                 .ThenInclude(b => b.BasketItems) 
                 .ThenInclude(bi => bi.Product)
                 .ToListAsync(); 
-
             return order;
         }
 
