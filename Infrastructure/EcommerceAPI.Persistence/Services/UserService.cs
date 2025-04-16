@@ -45,18 +45,18 @@ namespace EcommerceAPI.Persistence.Services
             }
             else
                 throw new UserNotFoundException();
-            
+
         }
 
         public async Task UpdatePasswordAsync(string userId, string resetToken, string newPassword)
         {
             AppUser user = await _userManager.FindByIdAsync(userId);
-            if(user != null)
+            if (user != null)
             {
                 var isValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", resetToken);
                 if (isValid)
                 {
-                   await _userManager.ResetPasswordAsync(user, resetToken,newPassword);
+                    await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
                 }
 
             }

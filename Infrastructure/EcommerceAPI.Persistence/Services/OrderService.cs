@@ -2,18 +2,7 @@
 using EcommerceAPI.Application.DTOs.Orders;
 using EcommerceAPI.Application.Repositories.OrderRepository;
 using EcommerceAPI.Domain.Entities;
-using EcommerceAPI.Domain.Entities.Identity;
-using EcommerceAPI.Persistence.Repositories.OrderRepository;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EcommerceAPI.Persistence.Services
 {
@@ -22,32 +11,53 @@ namespace EcommerceAPI.Persistence.Services
         readonly IOrderWriteRepository _orderWriteRepository;
         readonly IOrderReadRepository _orderReadRepository;
 
+
         public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository)
         {
             _orderWriteRepository = orderWriteRepository;
             _orderReadRepository = orderReadRepository;
-
         }
 
         public async Task CreateOrderAsync(Create_Order_DTO createOrder)
         {
+
+            var orderNumber = new Random().Next(100000000, 999999999);
             await _orderWriteRepository.AddAsync(new()
             {
                 Description = createOrder.Description,
                 Address = createOrder.Address,
                 TotalPrice = createOrder.TotalPrice,
-                Id =Guid.Parse( createOrder.BasketId)
+                Id = Guid.Parse(createOrder.BasketId),
+                OrderNumber = orderNumber.ToString(),
+                isSended = false,
+                AppUserId = createOrder.AppUserId
             });
         }
 
+        public async Task<List<Order>> GetCustomerOrders(string customerId)
+        {
+            var customer = await _orderReadRepository.Table.Where(c => c.AppUserId == customerId).FirstOrDefaultAsync();
+
+            if (customer != null)
+            {
+                var order = await _orderReadRepository.Table
+                .Include(o => o.Basket)
+                .ThenInclude(b => b.BasketItems)
+                .ThenInclude(bi => bi.Product)
+                .Where(o => o.AppUserId == customerId)
+                .ToListAsync();
+                return order;
+            }
+            return new();
+        }
 
         public async Task<List<Order>> GetOrderDetailsAsync()
         {
-            var order = await _orderReadRepository.Table 
-                .Include(o => o.Basket) 
-                .ThenInclude(b => b.BasketItems) 
+            var order = await _orderReadRepository.Table
+                .Include(o => o.Basket)
+                .ThenInclude(b => b.BasketItems)
                 .ThenInclude(bi => bi.Product)
-                .ToListAsync(); 
+                .ToListAsync();
             return order;
         }
 
@@ -64,10 +74,20 @@ namespace EcommerceAPI.Persistence.Services
                 .Include(o => o.Basket)
                 .ThenInclude(b => b.BasketItems)
                 .ThenInclude(bi => bi.Product)
-                .OrderByDescending(o => o.CreatedDate) 
-                .FirstOrDefaultAsync(); 
+                .OrderByDescending(o => o.CreatedDate)
+                .FirstOrDefaultAsync();
 
             return lastOrder;
         }
+
+        public async Task SendOrder(string orderId)
+        {
+            Order order = await _orderReadRepository.GetByIdAsync(orderId);
+            if (order != null)
+            {
+                order.isSended = true;
+            }
+        }
+
     }
 }

@@ -21,4 +21,8 @@
     <ProjectReference Include="..\EcommerceAPI.Domain\EcommerceAPI.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Commands\Customer\" />
+  </ItemGroup>
+
 </Project>

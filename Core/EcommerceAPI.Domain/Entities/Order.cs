@@ -1,4 +1,5 @@
 ﻿using EcommerceAPI.Domain.Entities.Common;
+using EcommerceAPI.Domain.Entities.Identity;
 
 namespace EcommerceAPI.Domain.Entities
 {
@@ -8,5 +9,10 @@ namespace EcommerceAPI.Domain.Entities
         public string? Address { get; set; }
         public float TotalPrice { get; set; }
         public Basket? Basket { get; set; }
+        public bool isSended { get; set; }
+        public string AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
+        public string OrderNumber { get; set; }
+
     }
 }

@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Presentation/EcommerceAPI.API/appsettings.json
+/Presentation/EcommerceAPI.API/wwwroot/product-images
+/Presentation/EcommerceAPI.API/Properties
+/Presentation/EcommerceAPI.API/Program.cs

@@ -32,10 +32,9 @@ namespace EcommerceAPI.Persistence
 
 
         public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
-        {
-           // services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=EcommerceDb;")); 
+        { 
 
-            services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgreSQL"))); 
+            services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))); 
             services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<EcommerceAPIDbContext>().AddDefaultTokenProviders();
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>
@@ -67,6 +66,7 @@ namespace EcommerceAPI.Persistence
             services.AddScoped<IInternalAuth, AuthService>();
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ICustomerService, CustomerService>();
 
         }
     }

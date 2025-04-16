@@ -12,5 +12,6 @@ namespace EcommerceAPI.Application.DTOs.Orders
         public string Address { get; set; }
         public string BasketId { get; set; }
         public float TotalPrice { get; set; }
+        public string AppUserId { get; set; }
     }
 }

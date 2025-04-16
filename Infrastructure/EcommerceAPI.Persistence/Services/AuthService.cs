@@ -3,6 +3,8 @@ using EcommerceAPI.Application.Abstraction.Token;
 using EcommerceAPI.Application.DTOs;
 using EcommerceAPI.Application.DTOs.FacebookToken;
 using EcommerceAPI.Application.Exceptions;
+using EcommerceAPI.Application.Repositories.CustomerRepository;
+using EcommerceAPI.Domain.Entities;
 using EcommerceAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -24,8 +26,9 @@ namespace EcommerceAPI.Persistence.Services
         readonly ITokenHandler _tokenHandler;
         readonly IUserService _userService;
         readonly IMailService _mailService;
+        readonly ICustomerWriteRepository _customerWriteRepository;
 
-        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, System.Net.Http.IHttpClientFactory httpClientFactory, IConfiguration configuration, SignInManager<AppUser> signInManager, IUserService userService, IMailService mailService)
+        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, System.Net.Http.IHttpClientFactory httpClientFactory, IConfiguration configuration, SignInManager<AppUser> signInManager, IUserService userService, IMailService mailService, ICustomerWriteRepository customerWriteRepository)
         {
             _userManager = userManager;
             _tokenHandler = tokenHandler;
@@ -34,6 +37,7 @@ namespace EcommerceAPI.Persistence.Services
             _signInManager = signInManager;
             _userService = userService;
             _mailService = mailService;
+            _customerWriteRepository = customerWriteRepository;
         }
 
         async Task<Token> ExternalLogin(AppUser user, string Email, string Name, UserLoginInfo info, int tokenLifeTime)
@@ -43,29 +47,45 @@ namespace EcommerceAPI.Persistence.Services
                 user = await _userManager.FindByEmailAsync(Email);
                 if (user == null)
                 {
-                    user = new()
+                    user = new AppUser
                     {
                         Id = Guid.NewGuid().ToString(),
                         Email = Email,
                         UserName = Email,
                         NameSurname = Name,
                     };
-                    await _userManager.CreateAsync(user);
-                }
 
+                    var result = await _userManager.CreateAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Failed to create user.");
+                    }
+
+                    var customer = new Customer
+                    {
+                        UserId = user.Id,
+                        Name = Name
+                    };
+
+                    await _customerWriteRepository.AddAsync(customer);
+                    await _customerWriteRepository.SaveAsync();
+                }
             }
+
             if (user != null)
             {
                 await _userManager.AddLoginAsync(user, info);
                 Token token = _tokenHandler.CreateAccesstoken(tokenLifeTime, user);
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 600 );
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, 600);
                 return token;
             }
             else
+            {
                 throw new ExternalLoginErrorException();
-
-           
+            }
         }
+
+
 
         public async Task<Token> FacebookLoginAsync(string authToken, int tokenLifeTime)
         {
@@ -109,7 +129,7 @@ namespace EcommerceAPI.Persistence.Services
             AppUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
             return await ExternalLogin(user, payload.Email, payload.Name, info, tokenLifeTime);
-         
+
         }
 
         public async Task<Token> LoginAsync(string UsernameOrEmail, string Password, int tokenLifeTime)
@@ -134,13 +154,13 @@ namespace EcommerceAPI.Persistence.Services
                 throw new AuthenticationErrorException();
 
         }
-        public async Task<Token> RefreshTokenLogin(string RefreshToken , int refreshTokenLifeTime)
+        public async Task<Token> RefreshTokenLogin(string RefreshToken, int refreshTokenLifeTime)
         {
-           AppUser? user = await  _userManager.Users.FirstOrDefaultAsync(x => x.RefreshToken == RefreshToken);
+            AppUser? user = await _userManager.Users.FirstOrDefaultAsync(x => x.RefreshToken == RefreshToken);
 
             if (user != null && user.RefreshTokenExpireDate > DateTime.UtcNow)
             {
-                Token token = _tokenHandler.CreateAccesstoken(15,user);
+                Token token = _tokenHandler.CreateAccesstoken(15, user);
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate, refreshTokenLifeTime);
                 return token;
             }
@@ -153,10 +173,10 @@ namespace EcommerceAPI.Persistence.Services
             AppUser user = await _userManager.FindByEmailAsync(email);
             if (user != null)
             {
-               string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-               
+                string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
                 byte[] resetTokenBytes = Encoding.UTF8.GetBytes(resetToken);
-                
+
                 resetToken = WebEncoders.Base64UrlEncode(resetTokenBytes);
                 await _mailService.SendPasswordResetEmailAsync(email, user.Id, resetToken);
 

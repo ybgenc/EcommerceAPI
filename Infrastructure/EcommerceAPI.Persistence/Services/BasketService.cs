@@ -132,14 +132,14 @@ namespace EcommerceAPI.Persistence.Services
 
             if (basketItem.Quantity == 0)
             {
-                await _basketItemWriteRepository.DeleteAsync(basketItem.BasketItemId); 
+                await _basketItemWriteRepository.DeleteAsync(basketItem.BasketItemId);
             }
             else
             {
                 existItem.Quantity = basketItem.Quantity;
             }
 
-            await _basketItemWriteRepository.SaveAsync();  
+            await _basketItemWriteRepository.SaveAsync();
         }
 
         public Basket? GetBasketId
@@ -150,7 +150,7 @@ namespace EcommerceAPI.Persistence.Services
                 return basket;
             }
         }
-          
+
 
 
 

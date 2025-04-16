@@ -24,21 +24,23 @@ namespace EcommerceAPI.Application.Features.Commands.Order.CreateOrder
             _orderWriteRepository = orderWriteRepository;
             _mailService = mailService;
         }
-
         public async Task<CreateOrderCommandResponse> Handle(CreateOrderCommandRequest request, CancellationToken cancellationToken)
         {
+
             await _orderService.CreateOrderAsync(new()
             {
                 Description = request.Description,
                 Address = request.Address,
                 TotalPrice = request.TotalPrice,
-                BasketId = _basketService?.GetBasketId?.Id.ToString()
+                BasketId = _basketService?.GetBasketId?.Id.ToString(),
+                AppUserId = _basketService?.GetBasketId.UserId.ToString()
+
             });
             await _orderWriteRepository.SaveAsync();
 
             var orderMail = await _orderService.OrderMailDetail();
 
-            
+
             await _mailService.SendOrderMailAsync(orderMail);
             return new();
         }

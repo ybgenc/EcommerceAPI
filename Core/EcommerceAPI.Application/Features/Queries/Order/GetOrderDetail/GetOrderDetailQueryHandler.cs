@@ -1,4 +1,5 @@
 ﻿using EcommerceAPI.Application.Abstraction.Services;
+using EcommerceAPI.Application.Features.Queries.Order.GetCustomerOrders;
 using EcommerceAPI.Application.Repositories.OrderRepository;
 using EcommerceAPI.Domain.Entities;
 using MediatR;
@@ -32,10 +33,13 @@ namespace EcommerceAPI.Application.Features.Queries.Order.GetOrder
                     Price = basketItem?.Product?.Price ?? 0f,
                     Quantity = basketItem?.Quantity ?? 0,
                     Description = basketItem?.Basket?.Order?.Description,
-                    Address = basketItem?.Basket?.Order?.Address
-                }).ToList();
+                    Address = basketItem?.Basket?.Order?.Address,
+                    isSended = basketItem.Basket.Order.isSended,
+                    OrderNumber = basketItem.Basket.Order.OrderNumber,
+                    TotalPrice = basketItem.Basket.Order.TotalPrice
 
- 
+                }).ToList();
         }
+
     }
 }

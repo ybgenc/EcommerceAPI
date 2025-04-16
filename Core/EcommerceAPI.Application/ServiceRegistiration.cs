@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using EcommerceAPI.Application.Abstraction.Services.Configuration;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcommerceAPI.Application
@@ -9,6 +10,7 @@ namespace EcommerceAPI.Application
         {
             collection.AddMediatR(typeof(ServiceRegistiration));
             collection.AddHttpClient();
+
         }
     }
 }

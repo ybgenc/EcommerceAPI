@@ -19,7 +19,7 @@ namespace EcommerceAPI.Persistence.Contexts
         public DbSet<ProductImageFile> ProductImageFiles { get; set; }
         public DbSet<InvoiceFile> InvoiceFiles { get; set; }
         public DbSet<Basket> Baskets { get; set; }
-        public DbSet<BasketItem> BasketItems{ get; set; }
+        public DbSet<BasketItem> BasketItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,7 +27,18 @@ namespace EcommerceAPI.Persistence.Contexts
 
             modelBuilder.Entity<Basket>().HasOne(b => b.Order)
                                          .WithOne(o => o.Basket)
-                                         .HasForeignKey<Order>(b=> b.Id);
+                                         .HasForeignKey<Order>(b => b.Id);
+
+
+
+            modelBuilder.Entity<Customer>()
+                .HasOne(b => b.User)
+                .WithOne(o => o.Customer)
+                .HasForeignKey<Customer>(b => b.UserId);
+
+
+
+
             base.OnModelCreating(modelBuilder);
 
         }
@@ -40,7 +51,7 @@ namespace EcommerceAPI.Persistence.Contexts
             {
                 if (entry.State == EntityState.Unchanged)
                 {
-                    continue; 
+                    continue;
                 }
                 _ = entry.State switch
                 {

@@ -15,7 +15,8 @@ namespace EcommerceAPI.Application.Abstraction.Services
         Task<List<Order>> GetOrderDetailsAsync();
 
         Task<List<Order>> GetOrdersAsync();
-
         Task<Order> OrderMailDetail();
+        Task SendOrder(string  orderId);
+        Task<List<Order>> GetCustomerOrders(string customerId);
     }
 }

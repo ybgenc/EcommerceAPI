@@ -33,9 +33,9 @@ namespace EcommerceAPI.Infrastructure
                 case StorageType.Local:
                     serviceCollection.AddScoped<IStorage, LocalStorage>();
                     break;
-                case StorageType.Azure :
-                    serviceCollection.AddScoped<IStorage, AzureStorage>();
-                    break;
+                //case StorageType.Azure :
+                //    serviceCollection.AddScoped<IStorage, AzureStorage>();
+                //    break;
                 case StorageType.AWS :
                    // serviceCollection.AddScoped<IStorage, AWS>();
                     break;
