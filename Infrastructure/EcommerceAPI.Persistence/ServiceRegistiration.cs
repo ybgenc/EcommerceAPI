@@ -34,7 +34,8 @@ namespace EcommerceAPI.Persistence
         public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         { 
 
-            services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))); 
+            services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<EcommerceAPIDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgreSQL")));
             services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<EcommerceAPIDbContext>().AddDefaultTokenProviders();
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>

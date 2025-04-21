@@ -18,6 +18,8 @@ namespace EcommerceAPI.Application.Features.Queries.Order.GetOrder
         public string? Name { get; set; }
         public float? Price { get; set; }
         public int? Quantity { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public string imagePath { get; set; }
 
     }
 }

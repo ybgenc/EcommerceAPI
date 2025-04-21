@@ -13,6 +13,7 @@ namespace EcommerceAPI.Application.Abstraction.Services
         Task SendEmailAsync(string[] tos, string subject, string body, bool isBodyHtml = true);
         Task SendPasswordResetEmailAsync(string to, string userId, string resetToken);
         Task SendOrderMailAsync(Order order );
+        Task OrderShippedMailAsync (Order order );
 
     }
 }

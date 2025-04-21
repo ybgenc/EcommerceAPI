@@ -57,6 +57,7 @@ namespace EcommerceAPI.Persistence.Services
                 .Include(o => o.Basket)
                 .ThenInclude(b => b.BasketItems)
                 .ThenInclude(bi => bi.Product)
+                .ThenInclude(p => p.ProductImageFiles)
                 .ToListAsync();
             return order;
         }
@@ -89,5 +90,16 @@ namespace EcommerceAPI.Persistence.Services
             }
         }
 
+        public async Task<Order> OrderMailDetailById(string orderId)
+        {
+            var order = await _orderReadRepository.Table.
+                Include(o=>o.AppUser)
+                .Include(o => o.Basket)
+                .ThenInclude(b=> b.BasketItems)
+                .ThenInclude(bi => bi.Product)
+                .Where(o => o.Id == Guid.Parse( orderId))
+                .FirstOrDefaultAsync();
+            return order;
+        }
     }
 }

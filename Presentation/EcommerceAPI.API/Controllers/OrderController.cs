@@ -26,14 +26,14 @@ namespace EcommerceAPI.API.Controllers
         }
 
         [HttpPost("CreateOrder")]
-        //[AuthorizeDefinition(Menu = AuthorizeDefinitonConstants.Order, ActionType = ActionType.Writing, Definition = "Create Order")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitonConstants.Order, ActionType = ActionType.Writing, Definition = "Create Order")]
         public async Task<IActionResult> CreateOrder(CreateOrderCommandRequest request)
         {
             CreateOrderCommandResponse response = await _mediator.Send(request);
             return Ok(response);
         }
         [HttpGet("GetAllOrder")]
-        //[AuthorizeDefinition(Menu = AuthorizeDefinitonConstants.Order, ActionType = ActionType.Reading, Definition = "Get All Order")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitonConstants.Order, ActionType = ActionType.Reading, Definition = "Get All Order")]
         public async Task<IActionResult> GetAllOrder([FromQuery] GetOrderQueryRequest request)
         {
             List<GetOrderQueryResponse> response = await _mediator.Send(request);
@@ -41,20 +41,22 @@ namespace EcommerceAPI.API.Controllers
         }
 
         [HttpGet("GetOrderById/{OrderId}")]
-        //[AuthorizeDefinition(Menu = AuthorizeDefinitonConstants.Order, ActionType = ActionType.Updating, Definition = "Get Order By Id")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitonConstants.Order, ActionType = ActionType.Reading, Definition = "Get Order By Id")]
         public async Task<IActionResult> GetOrderById([FromRoute]GetOrderDetailQueryRequest request)
         {
             List<GetOrderDetailQueryResponse> response = await _mediator.Send(request);
             return Ok(response);
         }
         [HttpGet("GetCustomerOrder/{CustomerId}")]
+        [AuthorizeDefinition(Menu= AuthorizeDefinitonConstants.Order, ActionType =ActionType.Reading, Definition ="Get Customers Order")]
         public async Task<IActionResult> GetCustomerOrder([FromRoute] GetCustomerOrdersQueryRequest request)
         {
             List<GetCustomerOrdersQueryResponse> response = await _mediator.Send(request);
             return Ok(response);
         }
         [HttpPut("SendOrder")]
-        public async Task<IActionResult> SendOrder(SendOrderCommandRequest request)
+        [AuthorizeDefinition(Menu = AuthorizeDefinitonConstants.Order, ActionType = ActionType.Updating, Definition = "Send Order")]
+        public async Task<IActionResult> SendOrder([FromBody] SendOrderCommandRequest request)
         {
             SendOrderCommandResponse response = await _mediator.Send(request);
             return Ok(response);

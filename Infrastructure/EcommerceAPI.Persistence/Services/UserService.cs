@@ -15,24 +15,46 @@ namespace EcommerceAPI.Persistence.Services
         }
         public async Task<CreateUserResponse> CreateUser(CreateUser model)
         {
-            IdentityResult result = await _userManager.CreateAsync(new()
+            var existingUserByEmail = await _userManager.FindByEmailAsync(model.Email);
+            var existingUserByUsername = await _userManager.FindByNameAsync(model.UserName);
+
+            if (existingUserByEmail != null || existingUserByUsername != null)
+            {
+                return new CreateUserResponse
+                {
+                    Succeeded = false,
+                    Message = "This email or username is already in use."
+                };
+            }
+
+            // Yeni kullanıcıyı oluştur
+            var user = new AppUser
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = model.UserName,
                 Email = model.Email,
-                NameSurname = model.FullName,
-            }, model.Password);
+                NameSurname = model.FullName
+            };
 
-            CreateUserResponse response = new() { Succeeded = result.Succeeded };
+            IdentityResult result = await _userManager.CreateAsync(user, model.Password);
+
+            var response = new CreateUserResponse
+            {
+                Succeeded = result.Succeeded
+            };
+
             if (result.Succeeded)
+            {
                 response.Message = "User created successfully.";
+            }
             else
-                foreach (var error in result.Errors)
-                {
-                    response.Message += $"{error.Code} - {error.Description}";
-                }
-            return response; ;
+            {
+                response.Message = string.Join(" | ", result.Errors.Select(e => $"{e.Code} - {e.Description}"));
+            }
+
+            return response;
         }
+
 
 
         public async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accessTokenExpireDate, int addTimeOnAccessToken)

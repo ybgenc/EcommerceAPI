@@ -13,16 +13,20 @@ namespace EcommerceAPI.Application.Features.Commands.Order.SendOrder
     {
         readonly IOrderService _orderService;
         readonly IOrderWriteRepository _orderWriteRepository;
+        readonly IMailService _mailService;
 
-        public SendOrderCommandHandler(IOrderService orderService, IOrderWriteRepository orderWriteRepository)
+        public SendOrderCommandHandler(IOrderService orderService, IOrderWriteRepository orderWriteRepository, IMailService mailService)
         {
             _orderService = orderService;
             _orderWriteRepository = orderWriteRepository;
+            _mailService = mailService;
         }
 
         public async Task<SendOrderCommandResponse> Handle(SendOrderCommandRequest request, CancellationToken cancellationToken)
         {
-            await _orderService.SendOrder(request.OrderId);
+            await _orderService.SendOrder(request.OrderId);            
+            var orderMail = await _orderService.OrderMailDetailById(request.OrderId);
+            _mailService.OrderShippedMailAsync(orderMail);
             await _orderWriteRepository.SaveAsync();
             return new();
         }

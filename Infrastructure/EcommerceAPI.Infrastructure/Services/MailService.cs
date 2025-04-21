@@ -119,7 +119,52 @@ namespace EcommerceAPI.Infrastructure.Services
             await SendEmailAsync(order.Basket.User.Email, "We have received your order.", orderMail.ToString(), true);
         }
 
+        public async Task OrderShippedMailAsync(Order order)
+        {
+            StringBuilder shippedMail = new();
+            shippedMail.AppendLine("<html><body style='background-color: #feefd9; font-family: Arial, sans-serif; color: #333;'>");
+            shippedMail.AppendLine("<div style='padding: 20px;'>");
 
+            shippedMail.AppendLine($"<h4 style='color: #b47b84;'>Dear {order.AppUser.NameSurname},</h4>");
+            shippedMail.AppendLine($"<p>Your order shipped on <strong>{order.UpdatedDate:MMMM dd, yyyy}</strong>.</p>");
+            shippedMail.AppendLine("<p>Here are the items you will receive:</p>");
+
+            shippedMail.AppendLine("<table style='width: 100%; border-collapse: collapse; margin-top: 20px;'>");
+            shippedMail.AppendLine("<thead>");
+            shippedMail.AppendLine("<tr style='background-color: #feefd9; color: #b47b84; text-align: left;'>");
+            shippedMail.AppendLine("<th style='padding: 12px; border: 1px solid #ddd;'>Product</th>");
+            shippedMail.AppendLine("<th style='padding: 12px; border: 1px solid #ddd;'>Quantity</th>");
+            shippedMail.AppendLine("<th style='padding: 12px; border: 1px solid #ddd;'>Price</th>");
+            shippedMail.AppendLine("</tr>");
+            shippedMail.AppendLine("</thead>");
+            shippedMail.AppendLine("<tbody>");
+
+            foreach (var item in order.Basket.BasketItems)
+            {
+                shippedMail.AppendLine("<tr>");
+                shippedMail.AppendLine($"<td style='padding: 12px; border: 1px solid #ddd;'>{item.Product.Name}</td>");
+                shippedMail.AppendLine($"<td style='padding: 12px; border: 1px solid #ddd;'>{item.Quantity}</td>");
+                shippedMail.AppendLine($"<td style='padding: 12px; border: 1px solid #ddd;'>${item.Product.Price:F2}</td>");
+                shippedMail.AppendLine("</tr>");
+            }
+
+            shippedMail.AppendLine("</tbody>");
+            shippedMail.AppendLine("</table>");
+
+            shippedMail.AppendLine("<hr style='border: 1px solid #ddd; margin-top: 20px;'>");
+            shippedMail.AppendLine($"<p><strong>Total Price:</strong> ${order.TotalPrice:F2}</p>");
+            shippedMail.AppendLine($"<p><strong>Shipping Address:</strong> {order.Address}</p>");
+            shippedMail.AppendLine("<p>Your order is on the way! You will receive it soon.</p>");
+            shippedMail.AppendLine("<p>If you have any questions about your shipment, feel free to contact us.</p>");
+
+            shippedMail.AppendLine("<br>");
+            shippedMail.AppendLine("<p>Best regards,</p>");
+            shippedMail.AppendLine("<p><strong>E-Commerce Team</strong></p>");
+            shippedMail.AppendLine("</div>");
+            shippedMail.AppendLine("</body></html>");
+
+            await SendEmailAsync(order.AppUser.Email, "Your order has been shipped!", shippedMail.ToString(), true);
+        }
 
     }
 }

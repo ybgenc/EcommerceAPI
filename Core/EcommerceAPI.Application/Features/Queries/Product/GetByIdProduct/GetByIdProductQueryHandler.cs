@@ -1,5 +1,7 @@
 ﻿using EcommerceAPI.Application.Repositories.ProductRepository;
+using EcommerceAPI.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Products = EcommerceAPI.Domain.Entities;
 
 namespace EcommerceAPI.Application.Features.Queries.Product.GetByIdProduct
@@ -14,15 +16,38 @@ namespace EcommerceAPI.Application.Features.Queries.Product.GetByIdProduct
 
         public async Task<GetByIdProductQueryResponse> Handle(GetByIdProductQueryRequest request, CancellationToken cancellationToken)
         {
-            Products.Product product = await _productReadRepository.GetByIdAsync(request.Id, false);
-            return new()
+            var product = await _productReadRepository.Table
+                .Include(p => p.ProductImageFiles)
+                .FirstOrDefaultAsync(p => p.Id == Guid.Parse(request.Id));
+
+            var productDetail = new
             {
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock,
-                Description = product.Description,
-                Title = product.Title,
+                product.Id,
+                product.Name,
+                product.Stock,
+                product.Price,
+                product.Title,
+                product.Description,
+                product.CreatedDate,
+                product.UpdatedDate,
+                ProductImageFiles = product.ProductImageFiles.Select(img => new
+                {
+                    img.Id,
+                    img.FileName,
+                    img.Path,
+                    img.Storage,
+                    img.ShowCase,
+                    img.CreatedDate,
+                    img.UpdatedDate,
+                     
+                })
+            };
+
+            return new GetByIdProductQueryResponse
+            {
+                product = productDetail 
             };
         }
+
     }
 }

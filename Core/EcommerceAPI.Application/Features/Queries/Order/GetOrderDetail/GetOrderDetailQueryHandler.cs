@@ -36,7 +36,9 @@ namespace EcommerceAPI.Application.Features.Queries.Order.GetOrder
                     Address = basketItem?.Basket?.Order?.Address,
                     isSended = basketItem.Basket.Order.isSended,
                     OrderNumber = basketItem.Basket.Order.OrderNumber,
-                    TotalPrice = basketItem.Basket.Order.TotalPrice
+                    TotalPrice = basketItem.Basket.Order.TotalPrice,
+                    OrderDate  = basketItem.Basket.Order.CreatedDate,
+                    imagePath = basketItem.Product?.ProductImageFiles?.FirstOrDefault(img => img.ShowCase == true)?.Path
 
                 }).ToList();
         }
